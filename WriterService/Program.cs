@@ -28,7 +28,7 @@ factory.UserName = "guest";
 factory.Password = "guest";
 IConnection conn = factory.CreateConnection();
 IModel channel = conn.CreateModel();
-channel.QueueDeclare(queue: "users",
+channel.QueueDeclare(queue: "creation",
                         durable: false,
                         exclusive: false,
                         autoDelete: false,
@@ -58,7 +58,7 @@ consumer.Received += (model, ea) =>
 
     Console.WriteLine(" [x] Received from Rabbit: {0}", message);
 };
-channel.BasicConsume(queue: "users",
+channel.BasicConsume(queue: "creation",
                         autoAck: true,
                         consumer: consumer);
 

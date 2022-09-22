@@ -23,7 +23,7 @@ namespace FinquestTest.Services
             _factory.Password = "guest";
             _conn = _factory.CreateConnection();
             _channel = _conn.CreateModel();
-            _channel.QueueDeclare(queue: "users",
+            _channel.QueueDeclare(queue: "creation",
                                     durable: false,
                                     exclusive: false,
                                     autoDelete: false,
@@ -33,7 +33,7 @@ namespace FinquestTest.Services
         {
             var body = Encoding.UTF8.GetBytes("server processed " + messageString);
             _channel.BasicPublish(exchange: "",
-                                routingKey: "users",
+                                routingKey: "creation",
                                 basicProperties: null,
                                 body: body);
             Console.WriteLine(" [x] Published {0} to RabbitMQ", messageString);
