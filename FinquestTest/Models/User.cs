@@ -15,14 +15,6 @@ namespace FinquestTest.Models
             this.Audit = audit;
         }
 
-        public User()
-        {
-            this.FirstName = "";
-            this.LastName = "";
-            this.Username = "";
-            this.Password = "";
-        }
-
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string? Id { get; set; }
@@ -34,7 +26,7 @@ namespace FinquestTest.Models
         public string Username { get; set; } = null!;
 
         [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
-        public DateTime BirthDate { get; set; }
+        public DateTime? BirthDate { get; set; }
 
         public string Password { get; set; } = null!;
 

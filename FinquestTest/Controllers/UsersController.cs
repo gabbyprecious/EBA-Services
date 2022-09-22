@@ -21,13 +21,20 @@ namespace FinquestTest.Controllers;
 public class UserController : ControllerBase
 {
     private readonly UsersService _usersService;
-    private readonly IMessageService _messageService;
+    //private readonly IMessageService _messageService;
     //private IMapper _mapper;
 
-    public UserController(UsersService usersService, IMessageService messageService)
+    //public UserController(UsersService usersService, IMessageService messageService)
+    //{
+    //    _usersService = usersService;
+    //    _messageService = messageService;
+    //    //_mapper = mapper;
+    //}
+
+    public UserController(UsersService usersService)
     {
         _usersService = usersService;
-        _messageService = messageService;
+        //_messageService = messageService;
         //_mapper = mapper;
     }
 
@@ -79,9 +86,9 @@ public class UserController : ControllerBase
         await _usersService.CreateAsync(newUser);
 
         DumpUser dumpUser = new DumpUser(newUser.Id, newUser.FirstName, newUser.LastName, newUser.Username);
-        var messageData = Newtonsoft.Json.JsonConvert.SerializeObject(dumpUser);
+        //var messageData = Newtonsoft.Json.JsonConvert.SerializeObject(dumpUser);
 
-        _messageService.EnqueueCreate(messageData);
+        //_messageService.EnqueueCreate(messageData);
 
         return CreatedAtAction(nameof(Get), new { message = "User has registered successfully" });
     }
@@ -101,7 +108,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPut("{id:length(24)}")]
-    public async Task<ActionResult<User>> Update(string id, User updatedUser)
+    public async Task<ActionResult<User>> Update(string id, UpdateModel updatedUser)
     {
         var user = await _usersService.GetAsync(id);
 
@@ -110,12 +117,10 @@ public class UserController : ControllerBase
             return NotFound();
         }
 
-        updatedUser.Id = user.Id;
+        await _usersService.UpdateAsync(user, updatedUser);
 
-        await _usersService.UpdateAsync(id, updatedUser);
-
-        var messageData = Newtonsoft.Json.JsonConvert.SerializeObject(user);
-        _messageService.EnqueueUpdate(messageData);
+        //var messageData = Newtonsoft.Json.JsonConvert.SerializeObject(user);
+        //_messageService.EnqueueUpdate(messageData);
         return user;
     }
 

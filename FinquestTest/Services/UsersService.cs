@@ -123,11 +123,28 @@ public class UsersService
         return newUser;
     }
 
-    public async Task UpdateAsync(string id, User updatedUser)
+    public async Task UpdateAsync(User user, UpdateModel updatedUser)
     {
-        updatedUser.Audit.UpdatedDate = DateTime.Now;
-        updatedUser.Audit.UpdatedUsername = updatedUser.Username;
-        await _usersCollection.ReplaceOneAsync(x => x.Id == id, updatedUser);
+        if (!string.IsNullOrEmpty(updatedUser.Password))
+            user.Password = BC.HashPassword(updatedUser.Password);
+
+        if (!string.IsNullOrEmpty(updatedUser.FirstName))
+            user.FirstName = updatedUser.FirstName;
+
+        if (!string.IsNullOrEmpty(updatedUser.LastName))
+            user.LastName = updatedUser.LastName;
+
+        if (!string.IsNullOrEmpty(updatedUser.Username))
+            user.Username = updatedUser.Username;
+
+        if (updatedUser.BirthDate != null)
+            user.BirthDate = updatedUser.BirthDate;
+
+        user.Audit.UpdatedDate = DateTime.Now;
+        user.Audit.UpdatedUsername = updatedUser.Username;
+
+        var filter = Builders<User>.Filter.Eq(x => x.Id, user.Id);
+        await _usersCollection.ReplaceOneAsync(filter, user);
     }
         
 
