@@ -33,7 +33,7 @@ namespace FinquestTest.Services
         {
             var body = Encoding.UTF8.GetBytes("server processed " + messageString);
             _channel.BasicPublish(exchange: "",
-                                routingKey: "hello",
+                                routingKey: "users",
                                 basicProperties: null,
                                 body: body);
             Console.WriteLine(" [x] Published {0} to RabbitMQ", messageString);
