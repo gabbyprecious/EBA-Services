@@ -6,7 +6,7 @@ namespace FinquestTest.Services
 {
     public interface IMessageService
     {
-        bool Enqueue(string message);
+        bool EnqueueCreate(string message);
         bool EnqueueUpdate(string message);
     }
 
@@ -37,7 +37,7 @@ namespace FinquestTest.Services
                                     autoDelete: false,
                                     arguments: null);   
         }
-        public bool Enqueue(string messageString)
+        public bool EnqueueCreate(string messageString)
         {
             var body = Encoding.UTF8.GetBytes("server processed " + messageString);
             _createChannel.BasicPublish(exchange: "",

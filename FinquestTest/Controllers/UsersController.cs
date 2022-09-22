@@ -86,7 +86,7 @@ public class UserController : ControllerBase
         await _usersService.CreateAsync(newUser);
         var messageData = Newtonsoft.Json.JsonConvert.SerializeObject(newUser);
 
-        _messageService.Enqueue(messageData);
+        _messageService.EnqueueCreate(messageData);
 
         return CreatedAtAction(nameof(Get), new { id = newUser.Id }, newUser);
     }
