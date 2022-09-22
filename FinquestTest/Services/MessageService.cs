@@ -7,13 +7,15 @@ namespace FinquestTest.Services
     public interface IMessageService
     {
         bool Enqueue(string message);
+        bool EnqueueUpdate(string message);
     }
 
     public class MessageService : IMessageService
     {
         ConnectionFactory _factory;
         IConnection _conn;
-        IModel _channel;
+        IModel _createChannel;
+        IModel _updateChannel;
         public MessageService()
         {
             Console.WriteLine("about to connect to rabbit");
@@ -22,18 +24,35 @@ namespace FinquestTest.Services
             _factory.UserName = "guest";
             _factory.Password = "guest";
             _conn = _factory.CreateConnection();
-            _channel = _conn.CreateModel();
-            _channel.QueueDeclare(queue: "creation",
+            _createChannel = _conn.CreateModel();
+            _updateChannel = _conn.CreateModel();
+            _createChannel.QueueDeclare(queue: "creation",
                                     durable: false,
                                     exclusive: false,
                                     autoDelete: false,
                                     arguments: null);
+            _updateChannel.QueueDeclare(queue: "update",    
+                                    durable: false,
+                                    exclusive: false,
+                                    autoDelete: false,
+                                    arguments: null);   
         }
         public bool Enqueue(string messageString)
         {
             var body = Encoding.UTF8.GetBytes("server processed " + messageString);
-            _channel.BasicPublish(exchange: "",
+            _createChannel.BasicPublish(exchange: "",
                                 routingKey: "creation",
+                                basicProperties: null,
+                                body: body);
+            Console.WriteLine(" [x] Published {0} to RabbitMQ", messageString);
+            return true;
+        }
+
+        public bool EnqueueUpdate(string messageString)
+        {
+            var body = Encoding.UTF8.GetBytes("server processed " + messageString);
+            _updateChannel.BasicPublish(exchange: "",
+                                routingKey: "update",
                                 basicProperties: null,
                                 body: body);
             Console.WriteLine(" [x] Published {0} to RabbitMQ", messageString);
