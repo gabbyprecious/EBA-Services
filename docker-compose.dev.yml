@@ -13,7 +13,7 @@ services:
     image: mongo-express
     restart: always
     ports:
-      - 8082:8081
+      - 8084:8081
     environment:
       ME_CONFIG_BASICAUTH_USERNAME: root
       ME_CONFIG_BASICAUTH_PASSWORD: example
@@ -25,22 +25,45 @@ services:
 
     depends_on:
           - "mongo"
+  
+  rabbitmq: # login guest:guest
+    image: rabbitmq:3-management
+    hostname: "rabbitmq"
+    labels:
+      NAME: "rabbitmq"
+    ports:
+    - "4369:4369"
+    - "5671:5671"
+    - "5672:5672"
+    - "25672:25672"
+    - "15671:15671"
+    - "15672:15672"
 
 
   finquest_api:
     # image: finquest:latest
     ports:
-      - 8081:80
+      - 8083:80
     build:
       context: ./FinquestTest
       dockerfile: Dockerfile
+    depends_on:
+      - "rabbitmq"
+      # rabbitmq:
+      #   condition: service_started
 
   writerservice:
     # image: writerservice:latest
     depends_on:
       - "finquest_api"
+      # finquest_api:
+      #   condition: service_started
+
     build:
       context: ./WriterService
       dockerfile: Dockerfile
+    
+    stdin_open: true
+    tty: true
     environment:
       WEBSITE_URL: http://finquest_api-dev

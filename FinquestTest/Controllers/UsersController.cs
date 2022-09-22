@@ -31,15 +31,6 @@ public class UserController : ControllerBase
         //_mapper = mapper;
     }
 
-    //public UserController(UsersService usersService)
-    //{
-    //    _usersService = usersService;
-    //    //_mapper = mapper;
-    //}
-
-
-
-
     [HttpGet]
     public async Task<List<ListResponseUser>> Get()
     {
@@ -78,6 +69,8 @@ public class UserController : ControllerBase
     public async Task<IActionResult> Post(User newUser)
     {
 
+        newUser.Username = newUser.Username.ToLower();
+
         var user = await _usersService.GetByUsernameAsync(newUser.Username);
 
         if (user != null)
@@ -90,17 +83,21 @@ public class UserController : ControllerBase
 
         _messageService.EnqueueCreate(messageData);
 
-        return CreatedAtAction(nameof(Get), new { id = newUser.Id }, newUser);
+        return CreatedAtAction(nameof(Get), new { message = "User has registered successfully" });
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<User>> Authenticate([FromBody] Login model)
+    public async Task<ActionResult<ListResponseUser>> Authenticate([FromBody] Login model)
     {
+        model.Username = model.Username.ToLower();
+
         var user = await _usersService.LoginAsync(model.Username, model.Password);
+
+        ListResponseUser responseUser = new ListResponseUser(user.Id, user.FirstName, user.LastName, user.LastConnectionDate);
 
         if (user == null)
             return BadRequest(new { message = "Username or password is incorrect" });
-        return user;
+        return responseUser;
     }
 
     [HttpPut("{id:length(24)}")]
@@ -115,9 +112,10 @@ public class UserController : ControllerBase
 
         updatedUser.Id = user.Id;
 
-        //await _usersService.UpdateAsync(id, updatedUser);
-        //var messageData = Newtonsoft.Json.JsonConvert.SerializeObject(user);
-        //_messageService.EnqueueUpdate(messageData);
+        await _usersService.UpdateAsync(id, updatedUser);
+
+        var messageData = Newtonsoft.Json.JsonConvert.SerializeObject(user);
+        _messageService.EnqueueUpdate(messageData);
         return user;
     }
 

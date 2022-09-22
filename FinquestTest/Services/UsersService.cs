@@ -137,6 +137,11 @@ public class UsersService
     public async Task<User?> LoginAsync(string username, string password)
     {
         User user = await _usersCollection.Find(x => x.Username.Equals(username)).FirstOrDefaultAsync();
+
+        if(user == null)
+        {
+            return null;
+        }
         if (BC.Verify(password, user.Password))
         {
             user.LastConnectionDate = DateTime.Now;

@@ -15,9 +15,9 @@ Console.CancelKeyPress += (sender, eArgs) => {
     eArgs.Cancel = true;
 };
 
+Console.WriteLine("A writing service to create txt files after users have been created");
+
 string websiteUrl = Environment.GetEnvironmentVariable("WEBSITE_URL") ?? string.Empty;
-Console.WriteLine(websiteUrl);
-Console.WriteLine("Hello, World!");
 
 Task.Delay(15000).Wait();
 
