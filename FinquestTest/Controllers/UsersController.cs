@@ -21,22 +21,20 @@ namespace FinquestTest.Controllers;
 public class UserController : ControllerBase
 {
     private readonly UsersService _usersService;
-    //private readonly IMessageService _messageService;
-    //private IMapper _mapper;
+    private readonly IMessageService _messageService;
 
-    //public UserController(UsersService usersService, IMessageService messageService)
-    //{
-    //    _usersService = usersService;
-    //    _messageService = messageService;
-    //    //_mapper = mapper;
-    //}
-
-    public UserController(UsersService usersService)
+    public UserController(UsersService usersService, IMessageService messageService)
     {
         _usersService = usersService;
-        //_messageService = messageService;
+        _messageService = messageService;
         //_mapper = mapper;
     }
+
+    //public UserController(UsersService usersService)
+    //{
+    //    _usersService = usersService;
+    //    //_messageService = messageService;
+    //}
 
     [HttpGet]
     public async Task<List<ListResponseUser>> Get()
@@ -86,9 +84,9 @@ public class UserController : ControllerBase
         await _usersService.CreateAsync(newUser);
 
         DumpUser dumpUser = new DumpUser(newUser.Id, newUser.FirstName, newUser.LastName, newUser.Username);
-        //var messageData = Newtonsoft.Json.JsonConvert.SerializeObject(dumpUser);
+        var messageData = Newtonsoft.Json.JsonConvert.SerializeObject(dumpUser);
 
-        //_messageService.EnqueueCreate(messageData);
+        _messageService.EnqueueCreate(messageData);
 
         return CreatedAtAction(nameof(Get), new { message = "User has registered successfully" });
     }
@@ -119,8 +117,8 @@ public class UserController : ControllerBase
 
         await _usersService.UpdateAsync(user, updatedUser);
 
-        //var messageData = Newtonsoft.Json.JsonConvert.SerializeObject(user);
-        //_messageService.EnqueueUpdate(messageData);
+        var messageData = Newtonsoft.Json.JsonConvert.SerializeObject(user);
+        _messageService.EnqueueUpdate(messageData);
         return user;
     }
 
