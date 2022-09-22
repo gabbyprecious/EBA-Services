@@ -12,15 +12,19 @@ namespace WriterService
         }
 
 
+        public string? Id { get; set; }
+
         public string FirstName { get; set; } = null!;
 
         public string LastName { get; set; } = null!;
 
         public string Username { get; set; } = null!;
 
-        public DateTime? BirthDate { get; set; }
+        public DateTime BirthDate { get; set; }
 
         public string Password { get; set; } = null!;
+
+        public Audit? Audit { get; set; } = null!;
 
         public DateTime? LastConnectionDate { get; set; }
     }

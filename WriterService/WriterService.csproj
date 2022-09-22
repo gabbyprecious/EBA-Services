@@ -10,9 +10,11 @@
   <ItemGroup>
     <None Remove="Newtonsoft.Json" />
     <None Remove="RabbitMQ.Client" />
+    <None Remove="Microsoft.AspNet.WebHelpers" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="RabbitMQ.Client" Version="6.4.0" />
+    <PackageReference Include="Microsoft.AspNet.WebHelpers" Version="3.2.9" />
   </ItemGroup>
 </Project>

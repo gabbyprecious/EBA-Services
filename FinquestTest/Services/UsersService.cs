@@ -36,6 +36,7 @@ public class UsersService
 
     public async Task<List<User>> ListAsync(string firstName = "", string lastName = "", string atleastAConnection = "", string order ="", string orderBy="")
     {
+        // Building Filter
         var builder = Builders<User>.Filter;
         var filter = builder.Empty;
 
@@ -64,7 +65,7 @@ public class UsersService
             }
         }
 
-
+        //Building Sorter
         SortDefinition<User> sortData;
 
         if (string.IsNullOrWhiteSpace(orderBy))
@@ -108,6 +109,11 @@ public class UsersService
     public async Task<User?> GetAsync(string id) =>
         await _usersCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
 
+    //Discovered Bug: passing "string" when searching throws an error,
+    // This is not a usual error but would be nice looking into
+    public async Task<User?> GetByUsernameAsync(string username) =>
+        await _usersCollection.Find(x => x.Username == username).FirstOrDefaultAsync();
+
     public async Task<User> CreateAsync(User newUser)
     {
         newUser.Password = BC.HashPassword(newUser.Password);
@@ -117,14 +123,16 @@ public class UsersService
         return newUser;
     }
 
-    public async Task UpdateAsync(string id, User updatedUser) =>
+    public async Task UpdateAsync(string id, User updatedUser)
+    {
+        updatedUser.Audit.UpdatedDate = DateTime.Now;
+        updatedUser.Audit.UpdatedUsername = updatedUser.Username;
         await _usersCollection.ReplaceOneAsync(x => x.Id == id, updatedUser);
+    }
+        
 
     public async Task RemoveAsync(string id) =>
         await _usersCollection.DeleteOneAsync(x => x.Id == id);
-
-    //public async Task<User?> LoginAsync(string username, string password) =>
-    //    await _usersCollection.Find(x => x.Username.Equals(username) && x.Password.Equals(BCrypt.Net.BCrypt.HashPassword(password))).FirstOrDefaultAsync();
 
     public async Task<User?> LoginAsync(string username, string password)
     {
@@ -132,8 +140,6 @@ public class UsersService
         if (BC.Verify(password, user.Password))
         {
             user.LastConnectionDate = DateTime.Now;
-            user.Audit.UpdatedDate = DateTime.Now;
-            user.Audit.UpdatedUsername = user.Username;
             await _usersCollection.ReplaceOneAsync(x => x.Id == user.Id, user);
             return user;
         } else

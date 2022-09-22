@@ -77,7 +77,12 @@ public class UserController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Post(User newUser)
     {
-        //var user = _mapper.Map<User>(newUser);
+
+        var user = await _usersService.GetByUsernameAsync(newUser.Username);
+
+        if (user != null)
+            return BadRequest(new { message = "Username already exist" });
+
         await _usersService.CreateAsync(newUser);
         var messageData = Newtonsoft.Json.JsonConvert.SerializeObject(newUser);
 

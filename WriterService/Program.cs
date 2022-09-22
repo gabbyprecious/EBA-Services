@@ -4,6 +4,8 @@ using RabbitMQ.Client.Events;
 using Newtonsoft.Json;
 using System.Text;
 using System.Threading;
+using WriterService;
+using Newtonsoft.Json.Linq;
 // See https://aka.ms/new-console-template for more information
 
 ManualResetEvent _quitEvent = new ManualResetEvent(false);
@@ -13,11 +15,11 @@ Console.CancelKeyPress += (sender, eArgs) => {
     eArgs.Cancel = true;
 };
 
-string getEnv = Environment.GetEnvironmentVariable("WEBSITE_URL") ?? string.Empty;
-Console.WriteLine(getEnv);
+string websiteUrl = Environment.GetEnvironmentVariable("WEBSITE_URL") ?? string.Empty;
+Console.WriteLine(websiteUrl);
 Console.WriteLine("Hello, World!");
 
-Task.Delay(10000).Wait();
+Task.Delay(15000).Wait();
 
 Console.WriteLine("Trying to Connect to Queue");
 
@@ -32,15 +34,28 @@ channel.QueueDeclare(queue: "hello",
                         autoDelete: false,
                         arguments: null);
 
-Task.Delay(90000).Wait();
 Console.WriteLine("Consuming Queue Now");
 
 var consumer = new EventingBasicConsumer(channel);
-Console.WriteLine("consumer", consumer);
 consumer.Received += (model, ea) =>
 {
-    var body = ea.Body.Span;
+    var body = ea.Body.ToArray();
     var message = Encoding.UTF8.GetString(body);
+    string cleanedMessage =  message.Replace("server processed ", "").Replace("  ", " ");
+
+    User user = JsonConvert.DeserializeObject<User>(cleanedMessage);
+
+    string fileName = $"Welcome-{user.Username}.txt";
+    string text =
+    $"Hello {user.FirstName} {user.LastName},\n" +
+    "Welcome to Finquest candidate test platform, your registering have been approved, and now\n" +
+    $"you can connect to {websiteUrl}/login to use the platform.";
+
+    Console.WriteLine(text);
+
+    File.WriteAllText(fileName, text);
+    Console.WriteLine($"Writing to file {fileName} Done");
+
     Console.WriteLine(" [x] Received from Rabbit: {0}", message);
 };
 channel.BasicConsume(queue: "hello",
