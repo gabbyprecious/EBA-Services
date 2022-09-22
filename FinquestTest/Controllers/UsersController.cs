@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Net;
+using System.Runtime.ConstrainedExecution;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 
 using AutoMapper;
@@ -28,13 +30,36 @@ public class UserController : ControllerBase
         _messageService = messageService;
         //_mapper = mapper;
     }
-        
-    
+
+    //public UserController(UsersService usersService)
+    //{
+    //    _usersService = usersService;
+    //    //_mapper = mapper;
+    //}
+
+
 
 
     [HttpGet]
-    public async Task<List<User>> Get() =>
-        await _usersService.GetAsync();
+    public async Task<List<ListResponseUser>> Get()
+    {
+        string firstName = this.Request.Query["firstName"];
+        string lastName = this.Request.Query["lastName"];
+        string atleastAConnection = this.Request.Query["atleastAConnection"];
+        string orderBy = this.Request.Query["orderBy"];
+        string order = this.Request.Query["order"];
+        List<User> users =await _usersService.ListAsync(firstName, lastName, atleastAConnection, order, orderBy);
+        List<ListResponseUser> responseUsers = new List<ListResponseUser>();
+
+        foreach (var user in users)
+        {
+            ListResponseUser responseUser = new ListResponseUser(user.Id, user.FirstName, user.LastName, user.LastConnectionDate);
+            responseUsers.Add(responseUser);
+        }
+
+        return responseUsers;
+    }
+        
 
     [HttpGet("{id:length(24)}")]
     public async Task<ActionResult<User>> Get(string id)
@@ -72,7 +97,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPut("{id:length(24)}")]
-    public async Task<IActionResult> Update(string id, User updatedUser)
+    public async Task<ActionResult<User>> Update(string id, User updatedUser)
     {
         var user = await _usersService.GetAsync(id);
 
@@ -83,8 +108,10 @@ public class UserController : ControllerBase
 
         updatedUser.Id = user.Id;
 
-        await _usersService.UpdateAsync(id, updatedUser);
-        return NoContent();
+        //await _usersService.UpdateAsync(id, updatedUser);
+        //var messageData = Newtonsoft.Json.JsonConvert.SerializeObject(user);
+        //_messageService.EnqueueUpdate(messageData);
+        return user;
     }
 
     [HttpDelete("{id:length(24)}")]

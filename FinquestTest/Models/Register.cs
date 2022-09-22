@@ -9,7 +9,7 @@ namespace FinquestTest.Models
 
         public string Username { get; set; } = null!;
 
-        public string BirthDate { get; set; } = null!;
+        public DateTime? BirthDate { get; set; }
 
         public string Password { get; set; } = null!;
     }

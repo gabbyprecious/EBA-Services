@@ -46,3 +46,5 @@ consumer.Received += (model, ea) =>
 channel.BasicConsume(queue: "hello",
                         autoAck: true,
                         consumer: consumer);
+
+Console.ReadLine();

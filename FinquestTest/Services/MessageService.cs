@@ -23,7 +23,7 @@ namespace FinquestTest.Services
             _factory.Password = "guest";
             _conn = _factory.CreateConnection();
             _channel = _conn.CreateModel();
-            _channel.QueueDeclare(queue: "hello",
+            _channel.QueueDeclare(queue: "users",
                                     durable: false,
                                     exclusive: false,
                                     autoDelete: false,
@@ -41,4 +41,3 @@ namespace FinquestTest.Services
         }
     }
 }
-

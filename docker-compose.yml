@@ -61,5 +61,8 @@ services:
     build:
       context: ./WriterService
       dockerfile: Dockerfile
+    
+    stdin_open: true
+    tty: true
     environment:
       WEBSITE_URL: http://finquest_api-prod
