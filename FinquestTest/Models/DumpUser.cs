@@ -1,9 +1,9 @@
 ﻿using System;
-namespace WriterService
+namespace FinquestTest.Models
 {
-    public class User
+    public class DumpUser
     {
-        public User(string id, string firstName, string lastName, string username)
+        public DumpUser(string id, string firstName, string lastName, string username)
         {
             this.FirstName = firstName;
             this.LastName = lastName;

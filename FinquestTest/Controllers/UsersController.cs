@@ -84,7 +84,9 @@ public class UserController : ControllerBase
             return BadRequest(new { message = "Username already exist" });
 
         await _usersService.CreateAsync(newUser);
-        var messageData = Newtonsoft.Json.JsonConvert.SerializeObject(newUser);
+
+        DumpUser dumpUser = new DumpUser(newUser.Id, newUser.FirstName, newUser.LastName, newUser.Username);
+        var messageData = Newtonsoft.Json.JsonConvert.SerializeObject(dumpUser);
 
         _messageService.EnqueueCreate(messageData);
 
