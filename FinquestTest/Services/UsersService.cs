@@ -109,8 +109,6 @@ public class UsersService
     public async Task<User?> GetAsync(string id) =>
         await _usersCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
 
-    //Discovered Bug: passing "string" when searching throws an error,
-    // This is not a usual error but would be nice looking into
     public async Task<User?> GetByUsernameAsync(string username) =>
         await _usersCollection.Find(x => x.Username == username).FirstOrDefaultAsync();
 
